@@ -216,7 +216,7 @@ SkitariusArmoury.validate_chain_time = function(self, chain_time, chain_action_n
     end
     -- Weapons with one incorrect time
     local incorrect_time = INCORRECT_TIMES[weapon_name][chain_action_name].incorrect or 0
-    local also_incorrect_time = INCORRECT_TIMES[Mweapon_name][chain_action_name].also_incorrect or 0
+    local also_incorrect_time = INCORRECT_TIMES[weapon_name][chain_action_name].also_incorrect or 0
     -- Weapons with two incorrect times
     local correct_time = INCORRECT_TIMES[weapon_name][chain_action_name].correct or 0
     local also_correct_time = INCORRECT_TIMES[weapon_name][chain_action_name].also_correct or 0
