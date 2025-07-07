@@ -509,8 +509,7 @@ SkitariusWeaponManager.suicidal = function(self, input, weenie_hut_jr)
 end
 
 SkitariusWeaponManager.interruption = function(self)
-    local sprinting = self:is_sprinting()
-    if sprinting then
+    if self:is_sprinting() or self:is_blocking() then
         return true
     end
     return false
