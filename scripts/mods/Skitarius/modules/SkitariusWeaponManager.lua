@@ -25,6 +25,10 @@ SkitariusWeaponManager.init = function(self, mod)
     self.firing = false
 end
 
+SkitariusWeaponManager.set_bind_manager = function(self, bind_manager)
+    self.bind_manager = bind_manager
+end
+
 --  ╦ ╦╔═╗╔═╗╔═╗╔═╗╔╗╔  ╔╦╗╔═╗╔╦╗╔═╗
 --  ║║║║╣ ╠═╣╠═╝║ ║║║║   ║║╠═╣ ║ ╠═╣
 --  ╚╩╝╚═╝╩ ╩╩  ╚═╝╝╚╝  ═╩╝╩ ╩ ╩ ╩ ╩
@@ -509,7 +513,9 @@ SkitariusWeaponManager.suicidal = function(self, input, weenie_hut_jr)
 end
 
 SkitariusWeaponManager.interruption = function(self)
-    if self:is_sprinting() or self:is_blocking() then
+    local sprinting = self:is_sprinting()
+    local blocking = self:is_blocking() and self.bind_manager:input_value("action_two_hold")
+    if sprinting or blocking then
         return true
     end
     return false
