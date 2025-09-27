@@ -282,6 +282,9 @@ return {
 							-- Power Sword
 							{text = "powersword_p1_m1", value = "powersword_p1_m1"},
 							{text = "powersword_p1_m2", value = "powersword_p1_m2"},
+							-- Power Falchion
+                            { text = "powersword_p2_m1",                 value = "powersword_p2_m1" },
+                            { text = "powersword_p2_m2",                 value = "powersword_p2_m2" },
 							-- Relic Sword
 							{text = "powersword_2h_p1_m1", value = "powersword_2h_p1_m1"},
 							{text = "powersword_2h_p1_m2", value = "powersword_2h_p1_m2"},

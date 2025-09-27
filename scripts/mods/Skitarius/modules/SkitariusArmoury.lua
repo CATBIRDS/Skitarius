@@ -148,6 +148,23 @@ local ASTRONOMICAN = {
             push_follow_up = true
         },
     },
+    combat_sword = {
+        p1 = {
+            action_one_hold = false,
+            action_one_pressed = false,
+            weapon_extra_pressed = true,
+        },
+        p2 = {
+            action_one_hold = false,
+            action_one_pressed = false,
+            weapon_extra_pressed = true,
+        },
+        p3 = {
+            action_one_hold = false,
+            action_one_pressed = false,
+            weapon_extra_pressed = true,
+        }
+    },
     psyker_smite = {
         BLITZ = true,
         action_one_hold = true,
