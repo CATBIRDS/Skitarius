@@ -86,7 +86,13 @@ return {
 						type            = "checkbox",
 						default_value   = false,
 						tooltip         = "overload_protection_tooltip",
-					}
+					},
+					{
+						setting_id = "halt_on_interrupt",
+						type = "checkbox",
+						default_value = false,
+						tooltip = "halt_on_interrupt_tooltip",
+					},
 				}
 			},
 			
@@ -170,12 +176,6 @@ return {
 				setting_id = "melee_settings",
 				type       = "group",
 				sub_widgets = {
-					{
-						setting_id = "halt_on_interrupt",
-						type = "checkbox",
-						default_value = false,
-						tooltip = "halt_on_interrupt_tooltip",
-					},
 					{
 						setting_id = "interrupt",
 						type = "dropdown",

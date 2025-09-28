@@ -342,17 +342,21 @@ end
 --//////////////////////////////////////////////////////////////////////////////--
 
 SkitariusOmnissiah.maybe_force_interrupt = function(self)
+    local parent = get_mod("Skitarius")
+    local halt_on_interrupt = parent and parent.recall_setting("halt_on_interrupt")
     local engram = self.engram
     local current_command = engram:current_command()
     local input_table = self.bind_manager:get_input_table()
     if not current_command then return end
     -- Do not interrupt if busy with weapon swapping or a pre-existing interruption, or outside of keybind activity
     if engram.BIND == "TEMP" or engram.BIND == "INTERRUPT" or string.find(current_command, "wield") or not self.bind_manager:any_binds() then return end
+    -- WeaponManager's interruption check is used for manual player actions which immediately halt any existing activity
     local kill_interruption = self.weapon_manager:interruption()
-    if self.mod.settings.halt_on_interrupt and kill_interruption then
+    if halt_on_interrupt and kill_interruption then
         self.mod:kill_sequence()
         return
     end
+    -- INTERRUPTING_ACTIONS table check is used for player actions which should REPLACE existing activity
     for input, data in pairs(input_table) do
         if data.value then
             local interruption = INTERRUPTING_ACTIONS[input]
@@ -363,7 +367,7 @@ SkitariusOmnissiah.maybe_force_interrupt = function(self)
             end
         end
     end
-    -- If no standard interruptions, check for FORCE_HEAVY_WHEN_SPECIAL criteria
+    -- If no standard interruptions, check for FORCE_HEAVY_WHEN_SPECIAL criteria, as it also needs to override any existing activity if its criteria is met
     if engram:get_setting("FORCE_HEAVY_WHEN_SPECIAL") and self.weapon_manager:special_active() then
         engram:build_temp_engram("heavy_attack", "FORCE_HEAVY")
         return
@@ -576,9 +580,11 @@ SkitariusOmnissiah.maybe_convert_desire = function(self, current_action, desired
     end
     -- If not running an engram but charging and set to auto-release charges, release the charge
     if not desired_action then
-        if current_action == "charge" and self.mod.settings.always_charge and weapon_manager:is_charged_ranged() then
+        local parent = get_mod("Skitarius")
+        local always_charge = parent and parent.recall_setting("always_charge") -- only fetch as necessary
+        if current_action == "charge" and always_charge and weapon_manager:is_charged_ranged() then
             return "shoot"
-        elseif current_action == "charge_alt" and self.mod.settings.always_charge and weapon_manager:is_charged_ranged() then
+        elseif current_action == "charge_alt" and always_charge and weapon_manager:is_charged_ranged() then
             return "shoot_alt"
         else
             return nil
@@ -610,9 +616,11 @@ SkitariusOmnissiah.resolve_conflicts = function(self, input, user, omnissiah)
     local weapon_manager = self.weapon_manager
     local bind_manager = self.bind_manager
     local weapon_name = weapon_manager:weapon_name()
+    local parent = get_mod("Skitarius")
     -- Actions taken when no engram is active
     if not omnissiah then
-        if weapon_manager:weapon_type() == "RANGED" and self.mod.settings.always_charge and weapon_manager:is_charged_ranged() then
+        local always_charge = parent and parent.recall_setting("always_charge") -- only fetch as necessary
+        if weapon_manager:weapon_type() == "RANGED" and always_charge and weapon_manager:is_charged_ranged() then
             if armoury.charged_ranged[weapon_name] then
                 if armoury.alt_weapons[weapon_name] then
                     if bind_manager:input_value("action_two_hold") and input == "action_one_hold" then
@@ -631,20 +639,6 @@ SkitariusOmnissiah.resolve_conflicts = function(self, input, user, omnissiah)
     end
     if bind_manager:input_value("action_two_hold") and weapon_manager:weapon_type() == "MELEE" then
         return nil
-    end
-    -- More aggressive method for staff weapons not respecting action_two_hold
-    if bind_manager:input_value("action_two_hold") and weapon_manager:weapon_type() == "RANGED" and armoury.force_staff[weapon_name] then
-        if input == "action_one_hold" then
-            outcome = false
-        elseif input == "action_one_pressed" then
-            if (self.mod.settings.always_charge and weapon_manager:is_charged_ranged()) and not weapon_manager:suicidal("action_one_pressed") then
-                outcome = omnissiah
-            else
-                outcome = user
-            end
-        else
-            outcome = user
-        end
     end
     -- Prevent further holding of action_one if the user has already held it and is attempting a light attack, as chain_time increments even before action transitions
     if LAST_DIVINATION.action_one_hold and not engram.TEMP then

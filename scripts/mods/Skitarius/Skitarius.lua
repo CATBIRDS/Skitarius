@@ -84,6 +84,13 @@ end
 
 -- Refresh weapon data and mod settings when mods are loaded
 mod.on_all_mods_loaded = function()
+    mod.build_modules()
+    mod.initialize()
+    mod.bind_manager:update_binds()
+end
+
+-- Rebuild modules when any settings changes are made, or upon initialization
+mod.build_modules = function()
     mod.armoury = Armoury
     mod.engram = Engram:new(mod)
     mod.weapon_manager = WeaponManager:new(mod)
@@ -91,10 +98,9 @@ mod.on_all_mods_loaded = function()
     mod.bind_manager = BindManager:new(mod)
     mod.engram:set_bind_manager(mod.bind_manager)
     mod.omnissiah = Omnissiah:new(mod)
+    mod.weapon_manager:set_bind_manager(mod.bind_manager)
     mod.omnissiah:set_bind_manager(mod.bind_manager)
     mod.widget_manager:set_bind_manager(mod.bind_manager)
-    mod.initialize()
-    mod.bind_manager:update_binds()
 end
 
 mod.ready = function(self)
@@ -140,6 +146,19 @@ mod.kill_sequence = function(optional_exclusion)
     -- Clear RoF last shot data
     --mod.omnissiah:reset_last_shot()
     mod.weapon_manager:set_firing(false)
+end
+
+-- Settings recall to ensure up-to-date values via modules
+-- From testing this has no noticeable performance impact, but fetching via get() is still expensive and objectively a poor solution - this should be replaced as soon as possible.
+-- The problem specifically is that modules will have outdated references to the parent object once users make changes to settings that are stored to mod.settings via the menus.
+-- Currently this impacts Omnissiah/Engram's checking of "halt_on_interrupt", and Omnissiah/WeaponManager's checking of "always_charge"/"always_charge_threshold".
+mod.recall_setting = function(setting_name)
+    if mod.settings[setting_name] ~= nil then
+        if mod:get(setting_name) ~= mod.settings[setting_name] then
+            mod.settings[setting_name] = mod:get(setting_name)
+        end
+        return mod.settings[setting_name]
+    end
 end
 
 --┌────────────────────┐--
