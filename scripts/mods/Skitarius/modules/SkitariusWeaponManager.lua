@@ -25,6 +25,10 @@ SkitariusWeaponManager.init = function(self, mod)
     self.firing = false
 end
 
+SkitariusWeaponManager.set_bind_manager = function(self, binds)
+    self.binds = binds
+end
+
 --  ╦ ╦╔═╗╔═╗╔═╗╔═╗╔╗╔  ╔╦╗╔═╗╔╦╗╔═╗
 --  ║║║║╣ ╠═╣╠═╝║ ║║║║   ║║╠═╣ ║ ╠═╣
 --  ╚╩╝╚═╝╩ ╩╩  ╚═╝╝╚╝  ═╩╝╩ ╩ ╩ ╩ ╩
@@ -241,6 +245,7 @@ SkitariusWeaponManager.is_charged_ranged = function(self, weenie_hut_jr)
     local weapon_extension = player_unit and ScriptUnit.has_extension(player_unit, "weapon_system")
     local unit_data_extension = player_unit and ScriptUnit.has_extension(player_unit, "unit_data_system")
     local fully_charged = false
+    local parent = get_mod("Skitarius")
     if weapon_extension and unit_data_extension then
         local charge_module = weapon_extension._action_module_charge_component
         -- Determine charge status
@@ -248,8 +253,10 @@ SkitariusWeaponManager.is_charged_ranged = function(self, weenie_hut_jr)
         local charge_level = charge_module and charge_module.charge_level or 0
         local engram_threshold = engram:charge_threshold() or 100
         local fully_charged_charge_level = (engram_threshold) / 100
-        if self.mod.settings.always_charge then
-            local charge_threshold = engram_threshold and (math.min(engram_threshold, self.mod.settings.always_charge_threshold)) or self.mod.settings.always_charge_threshold
+        local always_charge = parent and parent.recall_setting("always_charge") -- only fetch as necessary
+        if always_charge then
+            local always_charge_threshold = parent and parent.recall_setting("always_charge_threshold")
+            local charge_threshold = engram_threshold and (math.min(engram_threshold, always_charge_threshold)) or always_charge_threshold
             fully_charged_charge_level = charge_threshold / 100
         end
         local fully_charged_charge_threshold = math.min(fully_charged_charge_level, max_charge)
@@ -508,9 +515,16 @@ SkitariusWeaponManager.suicidal = function(self, input, weenie_hut_jr)
     end
 end
 
+-- Any of these interruptions halt active sequences IF "Halt on Interrupt" is enabled
 SkitariusWeaponManager.interruption = function(self)
-    local sprinting = self:is_sprinting()
-    if sprinting then
+    local sprinting = self:is_sprinting()                                                             -- Sprinting
+    local blocking = self.binds:input_value("action_two_hold") and self.binds:waiting_toggles()       -- Manual blocking/aiming/charging
+    local attacking = self.binds:input_value("action_one_hold") and self.binds:waiting_toggles()      -- Manual attacking outside of primary override sequence
+    -- Double-check to ensure it doesn't mess with intended actions (primarily ranged weaponry)
+    if (attacking) and self:is_aiming() or self:is_charging() then
+        attacking = false
+    end
+    if sprinting or blocking or attacking then
         return true
     end
     return false

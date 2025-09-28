@@ -245,7 +245,9 @@ SkitariusEngram.iterate_engram = function(self)
             self.TEMP = false
             self.COMMANDS = {}
             -- If this temp engram was created due to an interruption and HALT_ON_INTERRUPT is enabled, clear keybinds upon its completion
-            if self.mod.settings.halt_on_interrupt and self.BIND == "INTERRUPT" then
+            local parent = get_mod("Skitarius")
+            local halt_on_interrupt = parent and parent.recall_setting("halt_on_interrupt")
+            if halt_on_interrupt and self.BIND == "INTERRUPT" then
                 self.mod:kill_sequence()
             end
             self.bind_manager:update_binds()

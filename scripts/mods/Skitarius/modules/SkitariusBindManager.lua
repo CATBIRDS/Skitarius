@@ -478,6 +478,15 @@ SkitariusBindManager.override_primary = function(self)
     return self.active_binds.override_primary
 end
 
+SkitariusBindManager.waiting_toggles = function(self)
+    for key, value in pairs(self.active_binds) do
+        if string.find(key, "pressed") and value then
+            return true
+        end
+    end
+    return false
+end
+
 SkitariusBindManager.monitored_action = function(self, action_name)
     return self.monitored_actions[action_name] or false
 end
