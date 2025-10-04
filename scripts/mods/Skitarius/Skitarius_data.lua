@@ -93,6 +93,19 @@ return {
 						default_value = false,
 						tooltip = "halt_on_interrupt_tooltip",
 					},
+					{
+						setting_id = "halt_on_interrupt_types",
+						type = "dropdown",
+						default_value = "interruption_action_both",
+						tooltip = "halt_on_interrupt_types_tooltip",
+						options = {
+							{text = "interruption_sprint",  value = "interruption_sprint"},
+							{text = "interruption_action_one", value = "interruption_action_one"},
+							{text = "interruption_action_two", value = "interruption_action_two"},
+							{text = "interruption_action_both", value = "interruption_action_both"},
+							{text = "interruption_all",   value = "interruption_all"},
+						},
+					}
 				}
 			},
 			
@@ -541,6 +554,7 @@ return {
 							{text = "bolter_p1_m1", value = "bolter_p1_m1"},
 							-- Boltpistol
 							{text = "boltpistol_p1_m1", value = "boltpistol_p1_m1"},
+							{text = "boltpistol_p1_m2", value = "boltpistol_p1_m2"},
 							-- Autopistol
 							{text = "autopistol_p1_m1", value = "autopistol_p1_m1"},
 							-- Autogun
@@ -555,9 +569,10 @@ return {
 							{text = "autogun_p3_m1", value = "autogun_p3_m1"},
 							{text = "autogun_p3_m2", value = "autogun_p3_m2"},
 							{text = "autogun_p3_m3", value = "autogun_p3_m3"},
-							
 							-- Assail
 							{text = "psyker_throwing_knives", value = "psyker_throwing_knives"},
+							-- Smite
+							{text = "psyker_chain_lightning", value = "psyker_chain_lightning"},
 						},
 					},
 					{

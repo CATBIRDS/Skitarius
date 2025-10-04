@@ -67,9 +67,11 @@ mod.on_setting_changed = function(setting_name)
     elseif setting_name == "always_charge_threshold" then
         mod.settings.always_charge_threshold = mod:get("always_charge_threshold")
     elseif setting_name == "halt_on_interrupt" then
-        mod.halt_on_interrupt = mod:get("halt_on_interrupt")
+        mod.settings.halt_on_interrupt = mod:get("halt_on_interrupt")
+    elseif setting_name == "halt_on_interrupt_types" then
+        mod.settings.halt_on_interrupt_types = mod:get("halt_on_interrupt_types")
     elseif setting_name == "interrupt" then
-        mod.interrupt = mod:get("interrupt")
+        mod.settings.interrupt = mod:get("interrupt")
     -- Global settings
     elseif setting_name == "overload_protection" then
         WEENIE_HUT_JR = mod:get("overload_protection")
@@ -113,6 +115,7 @@ mod.initialize = function()
     mod.settings.always_charge = mod:get("always_charge") or false
     mod.settings.always_charge_threshold = mod:get("always_charge_threshold") or 100
     mod.settings.halt_on_interrupt = mod:get("halt_on_interrupt") or false
+    mod.settings.halt_on_interrupt_types = mod:get("halt_on_interrupt_types") or "interruption_action_both"
     mod.settings.interrupt = mod:get("interrupt") or "none"
     MAINTAIN_BIND = mod:get("maintain_bind") or false
     if mod.engram and mod.weapon_manager and mod.omnissiah and mod.bind_manager then
@@ -146,19 +149,6 @@ mod.kill_sequence = function(optional_exclusion)
     -- Clear RoF last shot data
     --mod.omnissiah:reset_last_shot()
     mod.weapon_manager:set_firing(false)
-end
-
--- Settings recall to ensure up-to-date values via modules
--- From testing this has no noticeable performance impact, but fetching via get() is still expensive and objectively a poor solution - this should be replaced as soon as possible.
--- The problem specifically is that modules will have outdated references to the parent object once users make changes to settings that are stored to mod.settings via the menus.
--- Currently this impacts Omnissiah/Engram's checking of "halt_on_interrupt", and Omnissiah/WeaponManager's checking of "always_charge"/"always_charge_threshold".
-mod.recall_setting = function(setting_name)
-    if mod.settings[setting_name] ~= nil then
-        if mod:get(setting_name) ~= mod.settings[setting_name] then
-            mod.settings[setting_name] = mod:get(setting_name)
-        end
-        return mod.settings[setting_name]
-    end
 end
 
 --┌────────────────────┐--

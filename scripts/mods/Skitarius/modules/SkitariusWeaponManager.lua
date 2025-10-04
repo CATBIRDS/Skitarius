@@ -51,10 +51,11 @@ SkitariusWeaponManager.refresh_weapon = function(self)
         elseif wielded_slot and (wielded_slot == "slot_secondary" or wielded_slot == "slot_grenade_ability") then
             weapon_name = visual_loadout._inventory_component.__data[1][wielded_slot]
             weapon_name = weapon_name and weapon_name:match("([^/]+)$")
-            if weapon_name and wielded_slot == "slot_secondary" or (wielded_slot == "slot_grenade_ability" and weapon_name and weapon_name == "psyker_throwing_knives") then
+            psyker_nades  = {psyker_throwing_knives = true, psyker_chain_lightning = true}
+            if weapon_name and wielded_slot == "slot_secondary" or (wielded_slot == "slot_grenade_ability" and weapon_name and psyker_nades[weapon_name]) then
                 self.name = weapon_name
             end
-            if wielded_slot == "slot_secondary" or (wielded_slot == "slot_grenade_ability" and weapon_name and weapon_name == "psyker_throwing_knives") then
+            if wielded_slot == "slot_secondary" or (wielded_slot == "slot_grenade_ability" and weapon_name and psyker_nades[weapon_name]) then
                 wielded_slot = "RANGED"
             end
         -- Method 2: Inventory system as failsafe
@@ -115,6 +116,7 @@ SkitariusWeaponManager.get_equipped = function(self, target)
             local name = weapon_template and weapon_template.name
             return name
         elseif target == "RANGED" then
+            if self.type == "RANGED" then return self.name end
             local weapon = weapons.slot_secondary
             local weapon_template = weapon and weapon.weapon_template
             local name = weapon_template and weapon_template.name
@@ -245,7 +247,6 @@ SkitariusWeaponManager.is_charged_ranged = function(self, weenie_hut_jr)
     local weapon_extension = player_unit and ScriptUnit.has_extension(player_unit, "weapon_system")
     local unit_data_extension = player_unit and ScriptUnit.has_extension(player_unit, "unit_data_system")
     local fully_charged = false
-    local parent = get_mod("Skitarius")
     if weapon_extension and unit_data_extension then
         local charge_module = weapon_extension._action_module_charge_component
         -- Determine charge status
@@ -253,9 +254,9 @@ SkitariusWeaponManager.is_charged_ranged = function(self, weenie_hut_jr)
         local charge_level = charge_module and charge_module.charge_level or 0
         local engram_threshold = engram:charge_threshold() or 100
         local fully_charged_charge_level = (engram_threshold) / 100
-        local always_charge = parent and parent.recall_setting("always_charge") -- only fetch as necessary
+        local always_charge = self.mod.settings.always_charge -- only fetch as necessary
         if always_charge then
-            local always_charge_threshold = parent and parent.recall_setting("always_charge_threshold")
+            local always_charge_threshold = self.mod.settings.always_charge_threshold
             local charge_threshold = engram_threshold and (math.min(engram_threshold, always_charge_threshold)) or always_charge_threshold
             fully_charged_charge_level = charge_threshold / 100
         end
@@ -330,17 +331,14 @@ SkitariusWeaponManager.in_cooldown = function(self)
             local inventory_slot_component = wielded_weapon and wielded_weapon.inventory_slot_component
             local overheat_state = inventory_slot_component and inventory_slot_component.overheat_state
             local special_charges = inventory_slot_component and inventory_slot_component.num_special_charges
-            -- Relic Blades
-            if overheat_state and overheat_state ~= "idle" then
-                return true
-            end
-            -- Riot Shields
+            local special_class = wielded_weapon and wielded_weapon.weapon_template and wielded_weapon.weapon_template.weapon_special_class
+            -- Riot Shields and Ogryn Power Maul
             if special_charges then
                 local weapon_template = wielded_weapon and wielded_weapon.weapon_template
                 local tweaker = weapon_template and weapon_template.weapon_special_tweak_data
-                
                 if tweaker then
                     local thresholds = tweaker.thresholds
+                    -- Riot Shields (flexible charge consumption based on thresholds)
                     if thresholds then
                         local above_threshold = false
                         for threshold_index = #thresholds, 2, -1 do
@@ -351,8 +349,15 @@ SkitariusWeaponManager.in_cooldown = function(self)
                             end
                         end
                         return not above_threshold
+                    elseif special_class and special_class == "WeaponSpecialExplodeOnImpactCooldown" then
+                        -- Ogryn Power Maul (single charge consumption)
+                        return special_charges == 0
                     end
                 end
+            end
+            -- Relic Blades
+            if overheat_state and overheat_state ~= "idle" then
+                return true
             end
         end
     end
@@ -517,6 +522,9 @@ end
 
 -- Any of these interruptions halt active sequences IF "Halt on Interrupt" is enabled
 SkitariusWeaponManager.interruption = function(self)
+    local halt_on_interrupt = self.mod.settings.halt_on_interrupt
+    if not halt_on_interrupt then return false end
+    local interruption_type = self.mod.settings.halt_on_interrupt_types
     local sprinting = self:is_sprinting()                                                             -- Sprinting
     local blocking = self.binds:input_value("action_two_hold") and self.binds:waiting_toggles()       -- Manual blocking/aiming/charging
     local attacking = self.binds:input_value("action_one_hold") and self.binds:waiting_toggles()      -- Manual attacking outside of primary override sequence
@@ -524,7 +532,21 @@ SkitariusWeaponManager.interruption = function(self)
     if (attacking) and self:is_aiming() or self:is_charging() then
         attacking = false
     end
-    if sprinting or blocking or attacking then
+    local interruption_map = {
+        interruption_sprint      = {sprinting=true},
+        interruption_action_one  = {attacking=true},
+        interruption_action_two  = {blocking=true},
+        interruption_action_both = {blocking=true, attacking=true},
+        interruption_all         = {sprinting=true, blocking=true, attacking=true}
+    }
+    local interruption_config = interruption_map[interruption_type]
+    if not interruption_config then
+        return false -- Settings error failsafe
+    end
+    -- Allow interruption if it matches the selected setting
+    if (sprinting and interruption_config.sprinting) or
+       (blocking and interruption_config.blocking) or
+       (attacking and interruption_config.attacking) then
         return true
     end
     return false
