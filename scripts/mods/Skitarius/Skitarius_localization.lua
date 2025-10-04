@@ -106,6 +106,37 @@ local localizations = {
       ["zh-cn"] = "切换武器时防止键位绑定自动失效。启用后请注意远程与近战键位可能产生的冲突。",
       ["zh-tw"] = "切換武器時防止按鍵綁定自動失效。 啟用後注意遠程與近戰鍵位可能產生的衝突",
     },
+    halt_on_interrupt = {
+        en = "Halt On Manual Interrupt",
+        ["zh-tw"] = "中斷時停止",
+        ["zh-cn"] = "中断应急终止",
+    },
+    halt_on_interrupt_tooltip = {
+        en = "Halts the current sequence and turns off active toggled keybinds when interrupted by user inputs.",
+        ["zh-tw"] = "當輸入中斷時，停止當前序列並關閉活動的切換按鍵綁定。",
+        ["zh-cn"] = "遭遇操作中断时立即终止当前指令，并重置所有切换式键位绑定。",
+    },
+    halt_on_interrupt_types = {
+        en = "Manual Interruptions"
+    },
+    halt_on_interrupt_types_tooltip = {
+        en = "Determines which manual interruptions will halt active sequences when 'Halt On Manual Interrupt' is enabled."
+    },
+    interruption_sprint = { 
+        en = "Sprinting"
+    },
+    interruption_action_one = {
+        en = "Attacking"
+    },
+    interruption_action_two = {
+        en = "Blocking"
+    },
+    interruption_action_both = {
+        en = "Attacking / Blocking"
+    },
+    interruption_all = {
+        en = "Sprinting / Attacking / Blocking"
+    },
     -- Keybinds
     maintain_bind = {
       en = "Maintain Keybind Status on Weapon Swap",
@@ -183,16 +214,6 @@ local localizations = {
         ["zh-tw"] = "近戰設定",
         ["zh-cn"] = "近战设置",
     },
-    halt_on_interrupt = {
-        en = "Halt On Manual Interrupt",
-        ["zh-tw"] = "中斷時停止",
-        ["zh-cn"] = "中断应急终止",
-    },
-    halt_on_interrupt_tooltip = {
-        en = "Halts the current sequence and turns off active toggled keybinds when interrupted by user inputs.",
-        ["zh-tw"] = "當輸入中斷時，停止當前序列並關閉活動的切換按鍵綁定。",
-        ["zh-cn"] = "遭遇操作中断时立即终止当前指令，并重置所有切换式键位绑定。",
-    },
     current_melee = {
       en = "JUMP TO CURRENT/GLOBAL",
       ["zh-cn"] = "近战武器选择",
@@ -222,7 +243,6 @@ local localizations = {
       en = "Halt Sequence",
       ["zh-tw"] = "暂停序列",
       ["zh-cn"] = "中断序列",
- 
     },
     melee_weapon_selection = {
         en = "Weapon Selection",
@@ -308,7 +328,6 @@ local localizations = {
       en = "Once the sequence has completed, it will restart from this step.",
       ["zh-cn"] = "当技能序列完整执行后，将从本步骤重新开始循环",
       ["zh-tw"] = "當技能序列完整執行後，將從本步驟重新開始迴圈",
- 
     },
     no_repeat = {
       en = "Halt Sequence on Completion",
@@ -608,6 +627,9 @@ for weapon, _ in pairs(WeaponTemplates) do
         }
     end
 end
+
+-- Automated localizations not handled by the WeaponTemplates method
+localizations["psyker_chain_lightning"] = { en = Localize("loc_ability_psyker_chain_lightning") }
 
 
 return localizations
