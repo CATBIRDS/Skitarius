@@ -191,7 +191,7 @@ SkitariusWeaponManager.is_charged_melee = function(self, running_action, compone
         local running_action_state = running_action:running_action_state(t, current_action_t)
         local chain_time = chain_action.chain_time
         chain_time = armoury:validate_chain_time(chain_time, chain_action_name, weapon_name)
-        
+        --self.mod:echo("%s, %s", chain_time, chain_action_name) -- DEBUG: View chain time and internal action name
         chain_validated = (chain_time and chain_time < current_action_t or not not chain_until and current_action_t < chain_until) and true
         local running_action_state_requirement = chain_action.running_action_state_requirement
         if running_action_state_requirement and (not running_action_state or not running_action_state_requirement[running_action_state]) then

@@ -74,7 +74,10 @@ SkitariusEngram.new_engram = function(self, bind_name_or_temp_data, temp_or_nil)
     local weapon_type = weapon_manager:weapon_type()
     local weapon_name = weapon_manager:weapon_name()
     local intermediary = self:valid_engram(bind_name_or_temp_data, temp_or_nil)
-    if not bind_name_or_temp_data or not intermediary or not weapon_name or not weapon_type then self:kill_engram() return end
+    if not bind_name_or_temp_data or not intermediary or not weapon_name or not weapon_type then
+        self:kill_engram()
+        return
+    end
     if temp_or_nil then
         return self:build_temp_engram(bind_name_or_temp_data, weapon_name)
     end

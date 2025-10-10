@@ -8,11 +8,10 @@ local localizations = {
         en = "Skitarius",
         ["zh-tw"] = "機械教信徒",
         ["zh-cn"] = "战斗序列（鼠标宏）",
-
     },
     mod_description = {
       en = "FROM THE MOMENT I UNDERSTOOD THE WEAKNESS OF MY FLESH, IT DISGUSTED ME.",
-      ["zh-tw"] = "當我看穿血肉的脆弱，那一刻，我的心靈便被機械的完美所召喚，對這腐朽之軀只剩厭憎。（繁體中文已由簡體漢化者維護，可能用詞差異和遊戲詞彙不同的不准確）",
+      ["zh-tw"] = "當我看穿血肉的脆弱，那一刻，我的心靈便被機械的完美所召喚，對這腐朽之軀只剩厭憎",
       ["zh-cn"] = "设置一个独属于你的连招，按键自动作出相应动作——————B站 独一无二的小真寻 汉化维护",
     },
     -- Debug
@@ -72,7 +71,7 @@ local localizations = {
     hud_element_size = {
         en = "Sequence Indicator Size",
         ["zh-tw"] = "MOD指示器大小",
-        ["zh-cn"] = "指示器尺寸大小",
+        ["zh-cn"] = "序列指示器尺寸",
     },
     -- Mod Settings
     mod_settings = {
@@ -98,13 +97,13 @@ local localizations = {
     },
     overload_protection = {
       en = "Overload Protection",
-      ["zh-cn"] = "武器切换时保持键位绑定",
-      ["zh-tw"] = "武器切換時保持按鍵綁定",
+      ["zh-cn"] = "过载保护",
+      ["zh-tw"] = "過載保護",
     },
     overload_protection_tooltip = {
       en = string.format("When enabled, the mod will prevent sequence input which would lead to death from Perils of the Warp. \nThis will NOT prevent deaths caused by manual player inputs."),
-      ["zh-cn"] = "切换武器时防止键位绑定自动失效。启用后请注意远程与近战键位可能产生的冲突。",
-      ["zh-tw"] = "切換武器時防止按鍵綁定自動失效。 啟用後注意遠程與近戰鍵位可能產生的衝突",
+      ["zh-cn"] = "如果下一次攻击引发过载自爆，序列将阻止继续执行",
+      ["zh-tw"] = "如果下一次攻擊引發過載自爆，序列將阻止繼續執行",
     },
     halt_on_interrupt = {
         en = "Halt On Manual Interrupt",
@@ -117,31 +116,45 @@ local localizations = {
         ["zh-cn"] = "遭遇操作中断时立即终止当前指令，并重置所有切换式键位绑定。",
     },
     halt_on_interrupt_types = {
-        en = "Manual Interruptions"
+        en = "Manual Interruptions",
+        ["zh-tw"] = "中断应急终止 ",
+        ["zh-cn"] = "手动中断",
     },
     halt_on_interrupt_types_tooltip = {
-        en = "Determines which manual interruptions will halt active sequences when 'Halt On Manual Interrupt' is enabled."
+        en = "Determines which manual interruptions will halt active sequences when 'Halt On Manual Interrupt' is enabled.",
+        ["zh-tw"] = "當啟用『中斷時停止』時，確定哪些手動中斷將停止活動序列。",
+        ["zh-cn"] = "启用『中断应急终止』后，确定哪些手动中断会导致当前指令终止。",
     },
-    interruption_sprint = { 
-        en = "Sprinting"
+    interruption_sprint = {
+        en = "Sprinting",
+        ["zh-tw"] = "衝刺中",
+        ["zh-cn"] = "疾跑中",
     },
     interruption_action_one = {
-        en = "Attacking"
+        en = "Attacking",
+        ["zh-tw"] = "攻擊中",
+        ["zh-cn"] = "攻击中",
     },
     interruption_action_two = {
-        en = "Blocking"
+        en = "Blocking",
+        ["zh-tw"] = "格擋中",
+        ["zh-cn"] = "格挡中",
     },
     interruption_action_both = {
-        en = "Attacking / Blocking"
+        en = "Attacking / Blocking",
+        ["zh-tw"] = "攻擊 / 格擋中",
+        ["zh-cn"] = "攻击 / 格挡中",
     },
     interruption_all = {
-        en = "Sprinting / Attacking / Blocking"
+        en = "Sprinting / Attacking / Blocking",
+        ["zh-tw"] = "衝刺 / 攻擊 / 格擋中",
+        ["zh-cn"] = "疾跑 / 攻击 / 格挡中",
     },
     -- Keybinds
     maintain_bind = {
       en = "Maintain Keybind Status on Weapon Swap",
-      ["zh-cn"] = "武器切换时保持键位绑定",
-      ["zh-tw"] = "武器切換時保持按鍵狀態",
+      ["zh-cn"] = "切换武器时 保持按键绑定状态",
+      ["zh-tw"] = "切換武器時，保持按鍵綁定狀態",
     },
     maintain_bind_tooltip = {
       en = "Prevents keybinds from disabling themselves when switching weapons. Be aware of overlapping Ranged and Melee keybinds when using this feature.",
@@ -262,7 +275,7 @@ local localizations = {
     thrust = {
         en = "Thrust",
         ["zh-tw"] = "推進",
-        ["zh-cn"] = "推开",
+        ["zh-cn"] = "助推",
     },
     slow_and_steady = {
         en = "Slow and Steady",
@@ -285,10 +298,10 @@ local localizations = {
         ["zh-cn"] = "蓄力buff特殊条件层数",
     },
     special_buff_stacks = {
-		en = "Heavy Buff Stacks (Special Attacks)",
-		["zh-tw"] = "重擊強化層數 （特殊攻擊）",
-		["zh-cn"] = "蓄力buff层数 （特殊攻击）",
-	},
+        en = "Heavy Buff Stacks (Special Attacks)",
+        ["zh-tw"] = "重擊強化層數 （特殊攻擊）",
+        ["zh-cn"] = "蓄力buff层数 （特殊攻击）",
+    },
     always_special = {
       en = "Always Activate Special Actions",
       ["zh-cn"] = "始终激活武器特殊技能",
@@ -331,8 +344,8 @@ local localizations = {
     },
     no_repeat = {
       en = "Halt Sequence on Completion",
-      ["zh-tw"] = "步驟一",
-      ["zh-cn"] = "步骤1",
+      ["zh-tw"] = "完成后停止",
+      ["zh-cn"] = "完成后停止",
     },
     sequence_step_one = {
         en = "Step One",
@@ -479,8 +492,8 @@ local localizations = {
     },
     always_charge_threshold_tooltip = {
       en = string.format("When enabled, this threshold will be used to determine when to auto-release charged attacks. \nThis will be overridden by the Weapon Charge Threshold setting if that setting is lower."),
-      ["zh-cn"] = string.format("该阈值决定何时释放闪击\n 如果充能阈值设置过低，此设置将被覆盖"),
-      ["zh-tw"] = string.format("該閾值决定何時釋放閃擊\n 如果充能閾值設定過低（蓄力將自動釋放，無需手動操作），此設定將被覆蓋"),
+      ["zh-cn"] = string.format("该阈值用于调整远程武器的充能强度,如果充能阈值过低,此设置将被覆盖"),
+      ["zh-tw"] = string.format("該閾值用於調整遠程武器的充能強度,如果充能閾值過低,此設置將被覆蓋"),
     },
     ranged_weapon_selection = {
       en = "Weapon Selection",
@@ -630,6 +643,5 @@ end
 
 -- Automated localizations not handled by the WeaponTemplates method
 localizations["psyker_chain_lightning"] = { en = Localize("loc_ability_psyker_chain_lightning") }
-
 
 return localizations

@@ -221,7 +221,7 @@ mod:hook_safe(CLASS.PlayerUnitWeaponExtension, "on_slot_wielded", function(self,
         -- Reset RoF shot tracking
         mod.omnissiah:reset_last_shot()
         -- Reset if not maintaining binds, if this swap was performed manually
-        if not MAINTAIN_BIND and MANUAL_SWAP then
+        if MANUAL_SWAP and not MAINTAIN_BIND then
             mod.kill_sequence()
         end
     else

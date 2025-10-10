@@ -277,9 +277,9 @@ local INTERRUPTING_ACTIONS = {
 
 local SWAP = {
     OCCURRED = false,
-    LIMITER = false,
+    LIMITER = true,
     SNAPSHOT = 0,
-    COOLDOWN = 0.25
+    COOLDOWN = 0.2
 }
 
 SkitariusOmnissiah.init = function(self, mod)
@@ -307,10 +307,10 @@ SkitariusOmnissiah.omnissiah = function(self, queried_input, user_value)
     -- Halt automatic firing inputs without altering engram or actions if pausing for RoF etc.
     if self:pause() then return DO_NOT_PAUSE[queried_input] and user_value or false end
     -- Iterate engram and recollect data for new state if the current action satisfies the engram's command, or if should_skip evaluates true
-    --self.mod:echo("%s, %s", current_action, desired_action)
+    --self.mod:echo("%s, %s", current_action, desired_action) -- DEBUG: View current action and next desired engram action
     if (current_action == desired_action or (desired_action and current_action == desired_action .. "_alt")) or self:should_skip(current_action, desired_action) then
-        -- Weapon swaps are handled within on_slot_wielded hook to avoid an infinite loop
-        if desired_action ~= "quick_wield" then
+        -- Weapon swaps are handled within on_slot_wielded hook to avoid an infinite loop, UNLESS via override_primary as that involves player input we need to handle
+        if desired_action ~= "quick_wield" or self.bind_manager:override_primary() then
             self.engram:iterate_engram()
             current_action = self:get_action()
             desired_action = self.engram:current_command()
@@ -328,7 +328,7 @@ SkitariusOmnissiah.omnissiah = function(self, queried_input, user_value)
         end
         return self:resolve_conflicts(queried_input, user_value, divine_outcome)
     end
-    --self.mod:echo("%s, %s", current_action, desired_action)
+    --self.mod:echo("%s, %s", current_action, desired_action) -- DEBUG: View current action and final desired engram action after potential modifications
     local divine_outcome = PRAY[current_action][desired_action][queried_input]
     
     -- STAGE 5 : RESOLVE_CONFLICTS
@@ -616,6 +616,7 @@ SkitariusOmnissiah.resolve_conflicts = function(self, input, user, omnissiah)
     local weapon_manager = self.weapon_manager
     local bind_manager = self.bind_manager
     local weapon_name = weapon_manager:weapon_name()
+
     -- Actions taken when no engram is active
     if not omnissiah then
         local always_charge = self.mod.settings.always_charge
