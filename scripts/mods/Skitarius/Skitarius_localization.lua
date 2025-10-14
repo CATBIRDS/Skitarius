@@ -117,25 +117,32 @@ local localizations = {
         ["zh-cn"] = "遭遇操作中断时立即终止当前指令，并重置所有切换式键位绑定。",
     },
     halt_on_interrupt_types = {
-        en = "Manual Interruptions"
+        en = "Manual Interruptions",
+        ["zh-tw"] = "手動中斷 ",
     },
     halt_on_interrupt_types_tooltip = {
-        en = "Determines which manual interruptions will halt active sequences when 'Halt On Manual Interrupt' is enabled."
+        en = "Determines which manual interruptions will halt active sequences when 'Halt On Manual Interrupt' is enabled.",
+        ["zh-tw"] = "當啟用『手動中斷』時，設定哪些手動中斷將停止活動序列。",
     },
     interruption_sprint = { 
-        en = "Sprinting"
+        en = "Sprinting",
+        ["zh-tw"] = "衝刺中",
     },
     interruption_action_one = {
-        en = "Attacking"
+        en = "Attacking",
+        ["zh-tw"] = "攻擊時",
     },
     interruption_action_two = {
-        en = "Blocking"
+        en = "Blocking",
+        ["zh-tw"] = "格擋時",
     },
     interruption_action_both = {
-        en = "Attacking / Blocking"
+        en = "Attacking / Blocking",
+        ["zh-tw"] = "攻擊 / 格擋時",
     },
     interruption_all = {
-        en = "Sprinting / Attacking / Blocking"
+        en = "Sprinting / Attacking / Blocking",
+        ["zh-tw"] = "衝刺 / 攻擊 / 格擋中",
     },
     -- Keybinds
     maintain_bind = {
@@ -160,12 +167,12 @@ local localizations = {
     },
     keybind_selection_melee = {
         en = "Keybind Selection",
-        ["zh-tw"] = "按鍵選擇",
+        ["zh-tw"] = "近戰按鍵選擇",
         ["zh-cn"] = "近战选择键位",
     },
     keybind_selection_ranged = {
         en = "Keybind Selection",
-        ["zh-tw"] = "按鍵選擇",
+        ["zh-tw"] = "遠程按鍵選擇",
         ["zh-cn"] = "远程选择键位",
     },
     keybind_one_pressed = {
@@ -331,7 +338,7 @@ local localizations = {
     },
     no_repeat = {
       en = "Halt Sequence on Completion",
-      ["zh-tw"] = "步驟一",
+      ["zh-tw"] = "完成序列後停止。",
       ["zh-cn"] = "步骤1",
     },
     sequence_step_one = {
