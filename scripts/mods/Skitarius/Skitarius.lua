@@ -274,40 +274,29 @@ end)
 -- InputService: CHECK MONITORED ACTIONS AND OVERRIDE INPUT DEPENDENT ON THE WILL OF THE OMNISSIAH --
 --/////////////////////////////////////////////////////////////////////////////////////////////////--
 
+-- My changes avoid redundant calculations and resolve potential conflicts caused by other mods that also hook into InputService._get.  by BlueGary
 mod:hook(CLASS.InputService, "_get", function(func, self, action_name)
-    -- Initial universal input collection
-    local action_rule = self._actions[action_name]
-    local out
-	if action_rule.filter then
-		out = action_rule.eval_func(action_rule.eval_obj, action_rule.eval_param)
-	else
-		out = action_rule.default_func()
-		local action_type = action_rule.type
-		local combiner = InputService.ACTION_TYPES[action_type].combine_func
-		for _, cb in ipairs(action_rule.callbacks) do
-			out = combiner(out, cb())
-		end
-    end
+    -- First get the original result
+    local original_result = func(self, action_name)
+    
     -- Mod interception
     if mod:ready() and not Managers.ui:using_input() then
         -- Manual swap detection
-        if type(action_name) == "string" and string.find(action_name, "wield") and out then
+        if type(action_name) == "string" and string.find(action_name, "wield") and original_result then
             MANUAL_SWAP = true
         end
         -- Input handling
         if mod.bind_manager:monitored_action(action_name) then
-            mod.bind_manager:set_input_value(action_name, out)
-            mod.omnissiah:maybe_reset_last_shot(action_name, out)
-            mod.bind_manager:maybe_update_primary_override(action_name, out)
+            mod.bind_manager:set_input_value(action_name, original_result)
+            mod.omnissiah:maybe_reset_last_shot(action_name, original_result)
+            mod.bind_manager:maybe_update_primary_override(action_name, original_result)
             --mod.bind_manager:update_binds()
-            local omnissiahs_will = mod.omnissiah:omnissiah(action_name, out)
-            --mod.maybe_force_interrupt(action_name, out)
-            if omnissiahs_will == nil then
-                return func(self, action_name)
-            elseif not mod.weapon_manager:suicidal(action_name, WEENIE_HUT_JR) then
+            local omnissiahs_will = mod.omnissiah:omnissiah(action_name, original_result)
+            --mod.maybe_force_interrupt(action_name, original_result)
+            if omnissiahs_will ~= nil and not mod.weapon_manager:suicidal(action_name, WEENIE_HUT_JR) then
                 return omnissiahs_will
             end
         end
     end
-    return func(self, action_name)
+    return original_result
 end)
