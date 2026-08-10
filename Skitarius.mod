@@ -8,5 +8,6 @@ return {
 			mod_localization = "Skitarius/scripts/mods/Skitarius/Skitarius_localization",
 		})
 	end,
+	load_after = { "Mark9" },
 	packages = {},
 }

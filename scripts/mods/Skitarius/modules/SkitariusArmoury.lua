@@ -50,6 +50,7 @@ local CHARGED_RANGED = {
     forcestaff_p4_m1 = true,
     -- Plasma Gun
     plasmagun_p1_m1 = true,
+    plasmagun_p1_m2 = true,
     -- Smite
     psyker_chain_lightning = true,
 }
@@ -81,6 +82,8 @@ local ACTIVE_SPECIAL_RANGED = {
     ogryn_heavystubber_p2_m1 = true,
     ogryn_heavystubber_p2_m2 = true,
     ogryn_heavystubber_p2_m3 = true,
+    -- Dual Stub Pistols
+    dual_stubpistols_p1_m1 = true,
 }
 
 local COMBAT_SHOTGUN = {
@@ -184,6 +187,7 @@ local ASTRONOMICAN = {
 
 -- INCORRECT_TIMES: Weapons and actions which have incorrect internal chain timings for heavies
 local INCORRECT_TIMES = {
+    --[[]]
     ogryn_powermaul_slabshield_p1_m1 = {
         action_right_heavy = {
             incorrect = 0.35,
@@ -215,7 +219,20 @@ local INCORRECT_TIMES = {
             incorrect = 0.25,
             correct = 0.3,
         }
-    }
+    },
+    combatknife_p1_m1 = {
+        action_left_heavy = {
+            incorrect = 0.3,
+            correct = 0.35,
+        }
+    },
+    combatknife_p1_m2 = {
+        action_left_heavy = {
+            incorrect = 0.3,
+            correct = 0.35,
+        }
+    },
+    --]]
 }
 
 SkitariusArmoury.shoot_actions = SHOOT_ACTIONS
@@ -246,10 +263,10 @@ SkitariusArmoury.validate_chain_time = function(self, chain_time, chain_action_n
     -- Weapons with one incorrect time: Tac Axe MkVII, Bully Club MkIIIb
     if chain_time == incorrect_time then
         chain_time = correct_time
-    -- Weapons with two incorrect times: Slab Shield
+        -- Weapons with two incorrect times: Slab Shield
     elseif chain_time == also_incorrect_time then
         chain_time = also_correct_time
-    -- Weapons with conditionally incorrect times: Crusher
+        -- Weapons with conditionally incorrect times: Crusher
     elseif previous == prev_action and chain_time == prev_incorrect_time then
         chain_time = prev_correct_time
     end
@@ -292,8 +309,10 @@ SkitariusArmoury.generates_peril = function(self, input, scriers)
             if keywords and keywords[2] and keywords[3] then
                 local family = keywords[2]
                 local mark = keywords[3]
-                local generates_peril = ASTRONOMICAN[family] and ASTRONOMICAN[family][mark] and ASTRONOMICAN[family][mark][input]
-                local unique_threshold = ASTRONOMICAN[family] and ASTRONOMICAN[family][mark] and ASTRONOMICAN[family][mark].UNIQUE_THRESHOLD
+                local generates_peril = ASTRONOMICAN[family] and ASTRONOMICAN[family][mark] and
+                    ASTRONOMICAN[family][mark][input]
+                local unique_threshold = ASTRONOMICAN[family] and ASTRONOMICAN[family][mark] and
+                    ASTRONOMICAN[family][mark].UNIQUE_THRESHOLD
                 return generates_peril, unique_threshold
             else
                 -- Non-family/mark weapons

@@ -58,10 +58,10 @@ mod.on_setting_changed = function(setting_name)
     -- Keybind settings
     if bind_manager:bind_setting(setting_name) then
         bind_manager:set_bind_setting(setting_name)
-    -- HUD settings
+        -- HUD settings
     elseif widget_manager:widget_setting(setting_name) then
         widget_manager:set_widget_setting(setting_name)
-    -- Mod settings
+        -- Mod settings
     elseif setting_name == "always_charge" then
         mod.settings.always_charge = mod:get("always_charge")
     elseif setting_name == "always_charge_threshold" then
@@ -72,7 +72,7 @@ mod.on_setting_changed = function(setting_name)
         mod.settings.halt_on_interrupt_types = mod:get("halt_on_interrupt_types")
     elseif setting_name == "interrupt" then
         mod.settings.interrupt = mod:get("interrupt")
-    -- Global settings
+        -- Global settings
     elseif setting_name == "overload_protection" then
         WEENIE_HUT_JR = mod:get("overload_protection")
     elseif setting_name == "mod_enable_held" then
@@ -101,6 +101,7 @@ mod.build_modules = function()
     mod.engram:set_bind_manager(mod.bind_manager)
     mod.omnissiah = Omnissiah:new(mod)
     mod.weapon_manager:set_bind_manager(mod.bind_manager)
+    mod.weapon_manager:set_omnissiah(mod.omnissiah)
     mod.omnissiah:set_bind_manager(mod.bind_manager)
     mod.widget_manager:set_bind_manager(mod.bind_manager)
 end
@@ -149,6 +150,7 @@ mod.kill_sequence = function(optional_exclusion)
     -- Clear RoF last shot data
     --mod.omnissiah:reset_last_shot()
     mod.weapon_manager:set_firing(false)
+    mod.weapon_manager:clear_sprint_buffer()
 end
 
 --┌────────────────────┐--
@@ -161,6 +163,7 @@ mod.update = function()
     mod.widget_manager:update_hud()
     if mod:ready() then
         mod.weapon_manager:update_peril()
+        mod.weapon_manager:update_sprint_buffer()
         mod.bind_manager:update_binds()
     end
 end
@@ -221,7 +224,7 @@ mod:hook_safe(CLASS.PlayerUnitWeaponExtension, "on_slot_wielded", function(self,
         -- Reset RoF shot tracking
         mod.omnissiah:reset_last_shot()
         -- Reset if not maintaining binds, if this swap was performed manually
-        if not MAINTAIN_BIND and MANUAL_SWAP then
+        if MANUAL_SWAP and not MAINTAIN_BIND then
             mod.kill_sequence()
         end
     else
@@ -246,7 +249,7 @@ local SELF_INFLICTED_STUNS = {
     thunder_hammer_m2_heavy = true,
 }
 
-mod:hook_safe(CLASS.PlayerCharacterStateStunned, "on_enter", function (self, unit, dt, t, previous_state, params)
+mod:hook_safe(CLASS.PlayerCharacterStateStunned, "on_enter", function(self, unit, dt, t, previous_state, params)
     -- Potentially reset/halt sequence if stunned by a non-self-inflicted source
     if params and params.disorientation_type and not SELF_INFLICTED_STUNS[params.disorientation_type] then
         if not mod.engram.TEMP and mod.interrupt ~= "none" and mod.weapon_manager:weapon_type() == "MELEE" then
@@ -275,19 +278,13 @@ end)
 --/////////////////////////////////////////////////////////////////////////////////////////////////--
 
 mod:hook(CLASS.InputService, "_get", function(func, self, action_name)
-    -- Initial universal input collection
     local action_rule = self._actions[action_name]
-    local out
-	if action_rule.filter then
-		out = action_rule.eval_func(action_rule.eval_obj, action_rule.eval_param)
-	else
-		out = action_rule.default_func()
-		local action_type = action_rule.type
-		local combiner = InputService.ACTION_TYPES[action_type].combine_func
-		for _, cb in ipairs(action_rule.callbacks) do
-			out = combiner(out, cb())
-		end
+    if not action_rule then
+        return func(self, action_name)
     end
+
+    local out = func(self, action_name)
+
     -- Mod interception
     if mod:ready() and not Managers.ui:using_input() then
         -- Manual swap detection
@@ -299,15 +296,13 @@ mod:hook(CLASS.InputService, "_get", function(func, self, action_name)
             mod.bind_manager:set_input_value(action_name, out)
             mod.omnissiah:maybe_reset_last_shot(action_name, out)
             mod.bind_manager:maybe_update_primary_override(action_name, out)
-            --mod.bind_manager:update_binds()
             local omnissiahs_will = mod.omnissiah:omnissiah(action_name, out)
-            --mod.maybe_force_interrupt(action_name, out)
             if omnissiahs_will == nil then
-                return func(self, action_name)
+                return out
             elseif not mod.weapon_manager:suicidal(action_name, WEENIE_HUT_JR) then
                 return omnissiahs_will
             end
         end
     end
-    return func(self, action_name)
+    return out
 end)

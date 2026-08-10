@@ -22,6 +22,11 @@ local MONITORED_ACTIONS = {
     weapon_extra_hold = true,
     weapon_reload_hold = true,
     quick_wield = true,
+    sprint = true,
+    sprinting = true,
+    hold_to_sprint = true,
+    --move_forward = true,
+    --move_backward = true
 }
 
 -- INPUT: The true state of each input (i.e. literal player input), as well as the system setting keybind for each input
@@ -33,6 +38,11 @@ local INPUT = {
     weapon_extra_hold = {key,value},
     weapon_reload_hold = {key,value},
     quick_wield = {key,value},
+    sprint = {key,value},
+    sprinting = {key,value},
+    hold_to_sprint = {key,value},
+    move_forward = {key,value},
+    move_backward = {key,value},
 }
 
 -- BIND_DATA: Contains all sequence data for each keybind
@@ -56,6 +66,7 @@ local MELEE_TEMPLATE = {
     special_buff_stacks = 0,
     always_special = false,
     force_heavy_when_special = false,
+    hold_heavy_when_sprinting = false,
     sequence_cycle_point = "sequence_step_one",
     sequence_step_one = "none",
     sequence_step_two = "none",
