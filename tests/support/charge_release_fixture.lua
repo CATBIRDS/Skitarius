@@ -1,6 +1,7 @@
 -- Lua 5.1 / LuaJIT. Load real modules in an isolated game-like environment.
 local function fixture(mode, global_threshold, weapon_threshold)
     local charge = { charge_level = 0, max_charge = 1 }
+    local inputs = { action_two_hold = true }
     local extensions = {
         weapon_system = { _action_module_charge_component = charge },
         unit_data_system = {},
@@ -35,6 +36,7 @@ local function fixture(mode, global_threshold, weapon_threshold)
     local mod = {
         settings = { always_charge = true, always_charge_threshold = global_threshold },
         armoury = load_module("SkitariusArmoury"),
+        charge_release = load_module("SkitariusChargeRelease"),
     }
     local engram = instance(load_module("SkitariusEngram"))
     local weapon = instance(load_module("SkitariusWeaponManager"))
@@ -49,7 +51,7 @@ local function fixture(mode, global_threshold, weapon_threshold)
         forcestaff_p2_m1 = { automatic_fire = mode, auto_charge_threshold = weapon_threshold },
     } } }
     -- Model the player holding secondary attack to charge, with no reload input.
-    binds.input_value = function(_, input) return input == "action_two_hold" end
+    binds.input_value = function(_, input) return inputs[input] or false end
     weapon:set_bind_manager(binds)
     engram:set_weapon_manager(weapon)
     engram:set_bind_manager(binds)
@@ -62,6 +64,8 @@ local function fixture(mode, global_threshold, weapon_threshold)
         weapon = weapon,
         binds = binds,
         settings = mod.settings,
+        inputs = inputs,
+        charge = charge,
         release_at = function(level)
             charge.charge_level = level
             -- Observe the actual synthesized fire input, not a copied formula.

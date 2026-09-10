@@ -67,4 +67,22 @@ describe("charge release", function()
         assert.is_false(f.release_at(0.25))
         assert.is_true(f.release_at(0.50))
     end)
+
+    it("does not synthesize fire when secondary attack is not held", function()
+        local f = fixture("none", 100, 50)
+        f.inputs.action_two_hold = false
+        assert.is_false(f.release_at(0.50))
+        assert.is_false(f.release_at(1))
+    end)
+
+    it("preserves the optional emergency release at high peril", function()
+        local f = fixture("none", 100, 50)
+        f.charge.charge_level = 0.25
+        f.weapon.generates_peril_wrapper = function() return true end
+        f.weapon.warp = 0.945
+        assert.is_false(f.weapon:is_charged_ranged())
+        assert.is_true(f.weapon:is_charged_ranged(true))
+        f.weapon.warp = 0.95
+        assert.is_false(f.weapon:is_charged_ranged(true))
+    end)
 end)

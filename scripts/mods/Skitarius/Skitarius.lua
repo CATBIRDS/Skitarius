@@ -1,5 +1,6 @@
 -- Written by Norkkom aka "SanctionedPsyker"
 local mod = get_mod("Skitarius")
+mod.charge_release = mod:io_dofile("Skitarius/scripts/mods/Skitarius/modules/SkitariusChargeRelease")
 local Engram = mod:io_dofile("Skitarius/scripts/mods/Skitarius/modules/SkitariusEngram")
 local Armoury = mod:io_dofile("Skitarius/scripts/mods/Skitarius/modules/SkitariusArmoury")
 local Omnissiah = mod:io_dofile("Skitarius/scripts/mods/Skitarius/modules/SkitariusOmnissiah")

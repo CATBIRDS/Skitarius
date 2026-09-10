@@ -29,15 +29,16 @@ After installation, the shorter command is:
 
 Expected: all tests pass, with exit status 0. Commit `2eee575` preserves the
 original red phase: four passing controls and one failing manual-release test.
-Busted discovers `tests/charge_release_spec.lua` through `.busted`; the isolated
-game fixture is in `tests/support/charge_release_fixture.lua`.
+Busted discovers `tests/*_spec.lua` through `.busted`. The behavior tests use
+`tests/support/charge_release_fixture.lua`; the charge policy tests load the
+pure `SkitariusChargeRelease` module directly, with no game stubs.
 
 The regression models manually holding secondary attack with Always Auto-Release
 Charges enabled, Global Charge Threshold at 100%, and the flame staff's Weapon
 Charge Threshold saved as 50% under `override_primary`. No sequence is running.
 At charge level 0.50, the mod should synthesize `action_one_pressed`.
 
-The test loads the real Armoury, BindManager, Engram, WeaponManager, and Omnissiah
+The fixture loads the real Armoury, BindManager, Engram, WeaponManager, and Omnissiah
 modules. It stubs the engine's class factory, player/extensions, held input, and
 peril detection. The threshold selection and fire-input decision are production
 code. Each fixture has its own Lua 5.1 environment and module state.
@@ -54,3 +55,8 @@ threshold. Other saved keybinds do not affect manual charging. Without a saved
 Primary weapon threshold, the global auto-release threshold applies. The
 Primary profile's `global_ranged` sequence settings are not used as a manual
 fallback; the global auto-release slider already provides that default.
+
+Here, Primary names the mod's default configuration profile. The regression
+holds secondary attack (right-click) to charge. Auto-release synthesizes primary
+fire while secondary remains held, using the mod's existing staff input mapping.
+It does not change the ordinary uncharged primary attack.
