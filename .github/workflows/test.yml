@@ -1,0 +1,23 @@
+name: Tests
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Busted
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: leafo/gh-actions-lua@v13
+        with:
+          luaVersion: luajit-2.1
+      - uses: leafo/gh-actions-luarocks@v6
+      - name: Run tests
+        run: luarocks --lua-version=5.1 --tree=lua_modules test
