@@ -453,6 +453,17 @@ SkitariusBindManager.get_bind_data = function(self)
     return self.bind_data
 end
 
+SkitariusBindManager.primary_charge_threshold = function(self, weapon_name)
+    local primary = self.bind_data and self.bind_data.override_primary
+    local ranged = primary and primary.RANGED
+    local weapon = ranged and ranged[weapon_name]
+    local threshold = weapon and weapon.auto_charge_threshold
+
+    if threshold and threshold >= 0 then
+        return threshold
+    end
+end
+
 SkitariusBindManager.get_input_table = function(self)
     return self.input
 end

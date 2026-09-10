@@ -380,20 +380,25 @@ SkitariusWeaponManager.is_charged_ranged = function(self, weenie_hut_jr)
         -- Determine charge status
         local max_charge = charge_module and charge_module.max_charge or 1
         local charge_level = charge_module and charge_module.charge_level or 0
-        local engram_threshold = engram:charge_threshold() or 100
-        local fully_charged_charge_level = (engram_threshold) / 100
-        local always_charge = self.mod.settings.always_charge -- only fetch as necessary
-        if always_charge then
-            local always_charge_threshold = self.mod.settings.always_charge_threshold
-            local charge_threshold = engram_threshold and (math.min(engram_threshold, always_charge_threshold)) or
-                always_charge_threshold
-            fully_charged_charge_level = charge_threshold / 100
+        local weapon_threshold = engram:charge_threshold()
+        local always_charge = self.mod.settings.always_charge
+        if always_charge and not engram:current_command() and self.binds then
+            weapon_threshold = self.binds:primary_charge_threshold(self:weapon_name())
         end
-        local fully_charged_charge_threshold = math.min(fully_charged_charge_level, max_charge)
+        local charge_release = self.mod.charge_release
+        local threshold = charge_release.resolve_threshold({
+            weapon_percent = weapon_threshold,
+            global_enabled = always_charge,
+            global_percent = self.mod.settings.always_charge_threshold,
+        })
 
         local generates_peril = self:generates_peril_wrapper()
         -- Fully charged if reached max threshold/level
-        if (charge_level and charge_level ~= 0 and ((charge_level >= fully_charged_charge_threshold))) then
+        if charge_release.is_ready({
+            charge_level = charge_level,
+            max_charge = max_charge,
+            threshold_percent = threshold,
+        }) then
             fully_charged = true
             -- Otherwise fully charged if holding it further would be lethal
         elseif weenie_hut_jr and generates_peril and (self.warp >= 0.940 and self.warp < 0.950) then
