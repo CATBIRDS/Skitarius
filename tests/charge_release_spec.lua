@@ -28,11 +28,43 @@ describe("charge release", function()
         assert.is_true(f.release_at(1))
     end)
 
-    -- Proposed contract from the tooltip: a lower saved weapon threshold
-    -- applies even without a running sequence. Intentionally red until fixed.
+    -- A lower saved Primary weapon threshold applies without a running sequence.
     it("releases manual charging at saved weapon 50%, with global at 100%", function()
         local f = fixture("none", 100, 50)
         assert.is_false(f.release_at(0.49))
+        assert.is_true(f.release_at(0.50))
+    end)
+
+    it("keeps the global threshold when no Primary weapon threshold is saved", function()
+        local f = fixture("none", 75, nil)
+        f.binds.bind_data = {}
+        assert.is_false(f.release_at(0.74))
+        assert.is_true(f.release_at(0.75))
+    end)
+
+    it("does not auto-release manual charging when global auto-release is disabled", function()
+        local f = fixture("none", 100, 50)
+        f.settings.always_charge = false
+        assert.is_false(f.release_at(0.50))
+        assert.is_false(f.release_at(1))
+    end)
+
+    it("uses an active keybind's threshold instead of Primary's threshold", function()
+        local f = fixture("none", 100, 50)
+        f.binds.bind_data.keybind_one_held = { RANGED = {
+            forcestaff_p2_m1 = { automatic_fire = "charged", auto_charge_threshold = 75 },
+        } }
+        f.engram:new_engram("keybind_one_held")
+        assert.is_false(f.release_at(0.50))
+        assert.is_true(f.release_at(0.75))
+    end)
+
+    it("ignores other keybind thresholds when manually charging", function()
+        local f = fixture("none", 100, 50)
+        f.binds.bind_data.keybind_one_pressed = { RANGED = {
+            forcestaff_p2_m1 = { automatic_fire = "charged", auto_charge_threshold = 25 },
+        } }
+        assert.is_false(f.release_at(0.25))
         assert.is_true(f.release_at(0.50))
     end)
 end)

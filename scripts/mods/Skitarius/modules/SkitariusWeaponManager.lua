@@ -380,9 +380,13 @@ SkitariusWeaponManager.is_charged_ranged = function(self, weenie_hut_jr)
         -- Determine charge status
         local max_charge = charge_module and charge_module.max_charge or 1
         local charge_level = charge_module and charge_module.charge_level or 0
-        local engram_threshold = engram:charge_threshold() or 100
+        local engram_threshold = engram:charge_threshold()
+        local always_charge = self.mod.settings.always_charge
+        if always_charge and not engram:current_command() and self.binds then
+            engram_threshold = self.binds:primary_charge_threshold(self:weapon_name())
+        end
+        engram_threshold = engram_threshold or 100
         local fully_charged_charge_level = (engram_threshold) / 100
-        local always_charge = self.mod.settings.always_charge -- only fetch as necessary
         if always_charge then
             local always_charge_threshold = self.mod.settings.always_charge_threshold
             local charge_threshold = engram_threshold and (math.min(engram_threshold, always_charge_threshold)) or

@@ -27,16 +27,15 @@ After installation, the shorter command is:
 ./lua_modules/bin/busted
 ```
 
-Expected on the current production code: **4 successes, 1 failure, 0 errors**,
-with a nonzero exit status.
-The failure is intentional: this is the red phase of TDD, with no production fix.
+Expected: all tests pass, with exit status 0. Commit `2eee575` preserves the
+original red phase: four passing controls and one failing manual-release test.
 Busted discovers `tests/charge_release_spec.lua` through `.busted`; the isolated
 game fixture is in `tests/support/charge_release_fixture.lua`.
 
 The regression models manually holding secondary attack with Always Auto-Release
 Charges enabled, Global Charge Threshold at 100%, and the flame staff's Weapon
 Charge Threshold saved as 50% under `override_primary`. No sequence is running.
-At charge level 0.50, the expected synthesized `action_one_pressed` is absent.
+At charge level 0.50, the mod should synthesize `action_one_pressed`.
 
 The test loads the real Armoury, BindManager, Engram, WeaponManager, and Omnissiah
 modules. It stubs the engine's class factory, player/extensions, held input, and
@@ -49,7 +48,9 @@ Passing controls cover equipment identification, an active weapon sequence at
 This establishes a configuration-to-input failure outside the game, not an
 in-game timing or animation test. The expected manual behavior follows the
 global threshold tooltip's promise that a lower weapon threshold overrides it.
-The future fix must define which keybind's threshold applies when no sequence is
-active: weapon thresholds are stored per keybind. This regression proposes the
-default `override_primary` configuration for that case; it does not settle
-precedence among other keybinds.
+When no sequence is running, manual auto-release uses the equipped weapon's
+`override_primary` (Primary) threshold. An active sequence retains its own
+threshold. Other saved keybinds do not affect manual charging. Without a saved
+Primary weapon threshold, the global auto-release threshold applies. The
+Primary profile's `global_ranged` sequence settings are not used as a manual
+fallback; the global auto-release slider already provides that default.

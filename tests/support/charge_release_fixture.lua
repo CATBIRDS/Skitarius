@@ -60,6 +60,8 @@ local function fixture(mode, global_threshold, weapon_threshold)
     return {
         engram = engram,
         weapon = weapon,
+        binds = binds,
+        settings = mod.settings,
         release_at = function(level)
             charge.charge_level = level
             -- Observe the actual synthesized fire input, not a copied formula.
