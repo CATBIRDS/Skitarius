@@ -1,4 +1,3 @@
--- Pure charge policy: slider values are percentages; game charge values are fractions.
 local SkitariusChargeRelease = {}
 
 SkitariusChargeRelease.resolve_threshold = function(options)
@@ -14,7 +13,6 @@ end
 SkitariusChargeRelease.is_ready = function(state)
     local threshold = math.min(state.threshold_percent / 100, state.max_charge)
 
-    -- A 0% slider means release as soon as charging starts, not while uncharged.
     return state.charge_level ~= 0 and state.charge_level >= threshold
 end
 

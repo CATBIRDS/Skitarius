@@ -453,7 +453,6 @@ SkitariusBindManager.get_bind_data = function(self)
     return self.bind_data
 end
 
--- Manual charging has no active sequence; use the equipped weapon's Primary settings.
 SkitariusBindManager.primary_charge_threshold = function(self, weapon_name)
     local primary = self.bind_data and self.bind_data.override_primary
     local ranged = primary and primary.RANGED

@@ -28,7 +28,6 @@ describe("charge release", function()
         assert.is_true(f.release_at(1))
     end)
 
-    -- A lower saved Primary weapon threshold applies without a running sequence.
     it("releases manual charging at saved weapon 50%, with global at 100%", function()
         local f = fixture("none", 100, 50)
         assert.is_false(f.release_at(0.49))

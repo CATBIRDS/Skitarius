@@ -1,4 +1,3 @@
--- Lua 5.1 / LuaJIT. Load real modules in an isolated game-like environment.
 local function fixture(mode, global_threshold, weapon_threshold)
     local charge = { charge_level = 0, max_charge = 1 }
     local inputs = { action_two_hold = true }
@@ -13,12 +12,11 @@ local function fixture(mode, global_threshold, weapon_threshold)
         },
     }
     local env = setmetatable({
-        -- These modules only need class() to provide a method table at load time.
         class = function() return {} end,
         require = function(name)
             if name == "scripts/settings/equipment/weapon_templates/weapon_templates"
                 or name == "scripts/utilities/ammo" then
-                return {} -- Neither dependency is used by the exercised methods.
+                return {}
             end
             error("Unexpected game dependency: " .. name)
         end,
@@ -45,12 +43,10 @@ local function fixture(mode, global_threshold, weapon_threshold)
     mod.engram, mod.weapon_manager = engram, weapon
     engram:init(mod)
     weapon:init(mod)
-    -- Peril/buffs are outside this test; do not force an emergency release.
     weapon.generates_peril_wrapper = function() return false end
     binds.bind_data = { override_primary = { RANGED = {
         forcestaff_p2_m1 = { automatic_fire = mode, auto_charge_threshold = weapon_threshold },
     } } }
-    -- Model the player holding secondary attack to charge, with no reload input.
     binds.input_value = function(_, input) return inputs[input] or false end
     weapon:set_bind_manager(binds)
     engram:set_weapon_manager(weapon)
@@ -68,7 +64,6 @@ local function fixture(mode, global_threshold, weapon_threshold)
         charge = charge,
         release_at = function(level)
             charge.charge_level = level
-            -- Observe the actual synthesized fire input, not a copied formula.
             return omnissiah:resolve_conflicts("action_one_pressed", false, nil, "charge", nil) == true
         end,
     }

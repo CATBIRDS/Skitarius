@@ -9,5 +9,4 @@ description = {
 dependencies = { "lua >= 5.1, < 5.2" }
 test_dependencies = { "busted == 2.3.0-1" }
 test = { type = "busted" }
--- Development/test manifest; the game loads the mod through Skitarius.mod.
 build = { type = "builtin", modules = {} }
