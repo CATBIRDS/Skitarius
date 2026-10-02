@@ -86,6 +86,12 @@ local ACTIVE_SPECIAL_RANGED = {
     dual_stubpistols_p1_m1 = true,
 }
 
+-- Add continuous-special weapons (vent-style specials that require hold rather than repeated pressed)
+local CONTINUOUS_SPECIAL = {
+    plasmagun_p1_m1 = true,
+    plasmagun_p1_m2 = true,
+}
+
 local COMBAT_SHOTGUN = {
     -- Combat Shotgun
     shotgun_p1_m1 = true,
@@ -196,6 +202,14 @@ local INCORRECT_TIMES = {
             also_correct = 0.45
         }
     },
+    ogryn_powermaul_slabshield_p1_m2 = {
+        action_right_heavy = {
+            incorrect = 0.35,
+            also_incorrect = 0.4,
+            correct = 0.5,
+            also_correct = 0.45
+        }
+    },
     ogryn_club_p2_m3 = {
         action_right_heavy = {
             incorrect = 0.5,
@@ -245,6 +259,8 @@ SkitariusArmoury.force_staff = FORCE_STAFF
 SkitariusArmoury.quelling = QUELLING
 SkitariusArmoury.astronomican = ASTRONOMICAN
 SkitariusArmoury.incorrect_times = INCORRECT_TIMES
+-- expose continuous-special mapping
+SkitariusArmoury.continuous_special = CONTINUOUS_SPECIAL
 
 SkitariusArmoury.validate_chain_time = function(self, chain_time, chain_action_name, weapon_name)
     if not (INCORRECT_TIMES[weapon_name] and INCORRECT_TIMES[weapon_name][chain_action_name]) then

@@ -134,23 +134,43 @@ end
 mod.kill_sequence = function(optional_exclusion)
     local engram = mod.engram
     local bind_manager = mod.bind_manager
-    local active_binds = bind_manager.active_binds
-    -- Clear ACTIVE_BINDS
+    local active_binds = bind_manager and bind_manager.active_binds or {}
+
+    -- Only clear toggle (pressed) binds; preserve held binds so they can resume when possible
     for key, _ in pairs(active_binds) do
         if key ~= optional_exclusion then
-            active_binds[key] = false
+            if string.find(key, "pressed") then
+                active_binds[key] = false
+            end
         end
     end
+
+    -- If any held bind is still active and valid for the current weapon, refresh binds and keep the engram
+    if bind_manager then
+        for key, v in pairs(active_binds) do
+            if v and string.find(key, "held") then
+                if engram and engram:valid_engram(key) then
+                    -- Let the bind manager pick up the active held bind and (re)create the engram as needed
+                    bind_manager:update_binds()
+                    return
+                end
+            end
+        end
+    end
+
     -- Do not clear engram if it belongs to the specified exclusion
-    if engram.BIND == optional_exclusion then
+    if engram and engram.BIND == optional_exclusion then
         return
     end
-    -- Clear ENGRAM
-    engram:kill_engram()
-    -- Clear RoF last shot data
-    --mod.omnissiah:reset_last_shot()
-    mod.weapon_manager:set_firing(false)
-    mod.weapon_manager:clear_sprint_buffer()
+
+    -- Clear ENGRAM and related state
+    if engram then
+        engram:kill_engram()
+    end
+    if mod.weapon_manager then
+        mod.weapon_manager:set_firing(false)
+        mod.weapon_manager:clear_sprint_buffer()
+    end
 end
 
 --┌────────────────────┐--
@@ -240,7 +260,7 @@ end)
 
 --/////////////////////////////////////////////////////////////////////////////////////////////////////////--
 -- PlayerCharacterStateStunned: MONITOR FOR PLAYER STUNS, AND RESET ENGRAM OR BUILD TEMP ENGRAMS AS NEEDED --
---/////////////////////////////////////////////////////////////////////////////////////////////////////////--
+--/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 local SELF_INFLICTED_STUNS = {
     thunder_hammer_light = true,

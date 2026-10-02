@@ -453,7 +453,10 @@ return {
                             { text = "thrust",          value = "thrust" },
                             { text = "slow_and_steady", value = "slow_and_steady" },
                             { text = "crunch",          value = "crunch" },
+                            { text = "big_hammer",      value = "big_hammer" },
+                            { text = "small_hammer",    value = "small_hammer" },
                             { text = "mechsword",       value = "mechsword" },
+                            { text = "unstoppable",     value = "unstoppable"}
                         }
                     },
                     {
@@ -461,7 +464,7 @@ return {
                         type = "numeric",
                         default_value = 0,
                         range = { 0, 4 },
-                        unit_text = "buff_stacks",
+                        --unit_text = "buff_stacks",
                         tooltip = "heavy_buff_stacks_tooltip",
                     },
                     {
@@ -475,7 +478,7 @@ return {
                         type = "numeric",
                         default_value = 0,
                         range = { 0, 8 },
-                        unit_text = "buff_stacks",
+                        --unit_text = "buff_stacks",
                     },
                     {
                         setting_id = "always_special",
@@ -676,7 +679,7 @@ return {
                         type = "numeric",
                         default_value = 100,
                         range = { 0, 100 },
-                        unit_text = "threshold",
+                        --unit_text = "threshold",
                     },
                     {
                         setting_id = "ads_filter",
@@ -693,7 +696,7 @@ return {
                         type = "numeric",
                         default_value = 0,
                         range = { 0, 800 },
-                        unit_text = "rate_of_fire",
+                        --unit_text = "rate_of_fire",
                         decimals_number = 0
                     },
                     {
@@ -701,7 +704,7 @@ return {
                         type = "numeric",
                         default_value = 0,
                         range = { 0, 800 },
-                        unit_text = "rate_of_fire",
+                        --unit_text = "rate_of_fire",
                         decimals_number = 0
                     },
                     {
